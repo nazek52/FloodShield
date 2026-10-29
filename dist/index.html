@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#0b1520" />
+    <meta
+      name="description"
+      content="FloodShield connects flood scenarios, field evidence and testable drainage interventions. An open research prototype."
+    />
+    <title>FloodShield — From flood signals to field action</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="./" class="brand"
+        ><svg viewBox="0 0 32 36" aria-hidden="true">
+          <path d="m16 2 13 5v11c0 8-13 16-13 16S3 26 3 18V7Z" />
+          <path d="M8 18q4-6 8 0t8 0M8 24q4-6 8 0t8 0" /></svg
+        >FloodShield<span>FIELD LAB</span></a
+      >
+      <nav>
+        <button id="labTab" class="tab active">Scenario lab</button
+        ><button id="historyTab" class="tab">
+          Historical evidence <span>↗</span>
+        </button>
+      </nav>
+      <div class="top-actions">
+        <span class="connection" id="apiStatus">● CHECKING META</span
+        ><button id="language" class="lang">RU</button
+        ><button
+          id="about"
+          class="icon-button"
+          aria-label="Method and limitations"
+        >
+          ⓘ
+        </button>
+      </div>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <div class="eyebrow" data-i18n="eyebrow">
+            DECISION SUPPORT · RESEARCH PROTOTYPE
+          </div>
+          <h1 data-i18n="title">From flood signals<br />to field action.</h1>
+          <p data-i18n="subtitle">
+            Understand where water accumulates. Check the evidence.<br />Test a
+            drainage intervention before sending a crew.
+          </p>
+        </div>
+        <div class="intro-actions">
+          <button class="btn primary" id="demo">
+            <span>▶</span>
+            <span data-i18n="guided">Run the 60-second demo</span></button
+          ><button class="btn secondary" id="export">
+            <span>↓</span>
+            <span data-i18n="export">Export evidence pack</span></button
+          ><small data-i18n="noClaims"
+            >Exploratory model. No live alerts or safety decisions.</small
+          >
+        </div>
+      </section>
+      <section id="tour" class="tour" hidden aria-live="polite">
+        <div>
+          <span class="step-number" id="tourNumber">01</span>
+          <div>
+            <strong id="tourTitle"></strong>
+            <p id="tourDescription"></p>
+          </div>
+        </div>
+        <div class="tour-actions">
+          <button class="btn secondary" id="tourExit">Exit</button
+          ><button class="btn primary" id="tourNext">Next →</button>
+        </div>
+      </section>
+      <div id="labView">
+        <section class="stats" aria-live="polite">
+          <article>
+            <span data-i18n="prioritySites">High-priority sites</span>
+            <div><strong id="highCount">—</strong><small>/ 18</small></div>
+            <p id="highDelta"></p>
+            <div class="mini-bars" id="bars"></div>
+          </article>
+          <article>
+            <span data-i18n="surface">Surface storage</span>
+            <div><strong id="retained">—</strong><small>m³</small></div>
+            <p data-i18n="surfaceSub">
+              Modeled water held inside the catchment
+            </p>
+            <svg class="spark" viewBox="0 0 140 25">
+              <path d="M0 22Q20 20 30 17T60 15 85 6 110 10 140 2" />
+            </svg>
+          </article>
+          <article>
+            <span data-i18n="fieldEvidence">Confirmed field reports</span>
+            <div>
+              <strong id="reportCount">0</strong
+              ><small id="pendingLabel"></small>
+            </div>
+            <p data-i18n="evidenceSub">
+              Human review before a report changes the worklist
+            </p>
+            <span class="stat-icon">⌖</span>
+          </article>
+          <article class="balance-card">
+            <span data-i18n="balance">Water balance</span>
+            <div>
+              <strong id="balance">—</strong><small id="balanceMark">✓</small>
+            </div>
+            <p id="balanceDetail"></p>
+            <span class="stat-icon">◉</span>
+          </article>
+        </section>
+        <section class="lab-grid">
+          <aside class="controls panel">
+            <div class="panel-heading">
+              <div>
+                <span class="overline">01 / SCENARIO</span>
+                <h2 data-i18n="conditions">Set the conditions</h2>
+              </div>
+              <button class="text-btn" id="reset" data-i18n="reset">
+                Reset
+              </button>
+            </div>
+            <label class="field-label" for="preset" data-i18n="scenario"
+              >Rainfall scenario</label
+            ><select id="preset">
+              <option value="base">Moderate rain</option>
+              <option value="storm">Intense storm</option>
+              <option value="stress">Drainage stress test</option>
+              <option value="saturated">Saturated ground</option>
+              <option value="dry">No rainfall</option>
+              <option value="custom" hidden>Custom scenario</option>
+            </select>
+            <div class="slider-field">
+              <label for="rain"
+                ><span data-i18n="rain">Event rainfall</span
+                ><output id="rainValue"></output></label
+              ><input
+                id="rain"
+                type="range"
+                min="0"
+                max="150"
+                step="5"
+                value="45"
+              />
+              <div class="range-labels">
+                <span>0 mm</span><span>150 mm</span>
+              </div>
+            </div>
+            <div class="slider-field">
+              <label for="duration"
+                ><span data-i18n="duration">Storm duration</span
+                ><output id="durationValue"></output></label
+              ><input id="duration" type="range" min="1" max="12" value="3" />
+              <div class="range-labels"><span>1 h</span><span>12 h</span></div>
+            </div>
+            <div class="divider"></div>
+            <div class="slider-field">
+              <label for="saturation"
+                ><span data-i18n="saturation">Ground saturation</span
+                ><output id="saturationValue"></output></label
+              ><input
+                id="saturation"
+                type="range"
+                min="0"
+                max="100"
+                step="5"
+                value="45"
+              />
+              <div class="range-labels">
+                <span data-i18n="dry">Dry</span
+                ><span data-i18n="wet">Saturated</span>
+              </div>
+            </div>
+            <div class="slider-field">
+              <label for="drainage"
+                ><span data-i18n="drainage">Network drainage capacity</span
+                ><output id="drainageValue"></output></label
+              ><input
+                id="drainage"
+                type="range"
+                min="0"
+                max="100"
+                step="5"
+                value="65"
+              />
+              <div class="range-labels"><span>0%</span><span>100%</span></div>
+            </div>
+            <div class="scenario-help">
+              <span>ⓘ</span>
+              <p data-i18n="scenarioHelp">
+                Parameters are synthetic. Change one factor to explore the
+                model’s response.
+              </p>
+            </div>
+            <div class="two-buttons">
+              <button class="btn secondary" id="save" data-i18n="save">
+                Save</button
+              ><button class="btn secondary" id="restore" data-i18n="restore">
+                Restore
+              </button>
+            </div>
+            <p id="saveStatus" role="status" class="small-muted"></p>
+          </aside>
+          <section class="map-panel panel">
+            <div class="map-heading">
+              <div>
+                <span class="live-dot"></span
+                ><strong data-i18n="district">Riverbend test catchment</strong
+                ><span class="map-sub" data-i18n="mapSub"
+                  >18 synthetic sites · 1 hectare each</span
+                >
+              </div>
+              <span class="tag amber" data-i18n="synthetic"
+                >SYNTHETIC GEOMETRY</span
+              >
+            </div>
+            <div class="map-wrap">
+              <svg
+                id="map"
+                viewBox="0 0 850 610"
+                role="group"
+                aria-label="Interactive synthetic catchment"
+              ></svg>
+              <div class="map-tools">
+                <button id="zoomIn" aria-label="Zoom in">+</button
+                ><button id="zoomOut" aria-label="Zoom out">−</button
+                ><button id="zoomReset" aria-label="Reset map view">⌖</button>
+              </div>
+              <div class="north">N<span>↑</span></div>
+              <div class="map-caption">
+                <span>↗</span>
+                <span data-i18n="mapCaption"
+                  >Click a site to inspect its evidence</span
+                >
+              </div>
+              <div class="map-legend">
+                <span><i class="low"></i><b data-i18n="low">Low</b></span
+                ><span
+                  ><i class="medium"></i><b data-i18n="medium">Watch</b></span
+                ><span
+                  ><i class="high"></i
+                  ><b data-i18n="high">Inspect first</b></span
+                ><small data-i18n="legend"
+                  >Inspection priority · not a probability</small
+                >
+              </div>
+            </div>
+            <div class="map-toolbar">
+              <label
+                ><input type="checkbox" id="flow" checked /><span
+                  data-i18n="flow"
+                  >Flow paths</span
+                ></label
+              ><label
+                ><input type="checkbox" id="labels" checked /><span
+                  data-i18n="labels"
+                  >Site scores</span
+                ></label
+              ><button class="text-btn" id="baseline" data-i18n="baseline">
+                Set comparison baseline
+              </button>
+            </div>
+          </section>
+          <aside class="inspector panel">
+            <div class="panel-heading">
+              <div>
+                <span class="overline">02 / INSPECT</span>
+                <h2 id="cellName"></h2>
+              </div>
+              <span class="site-code" id="siteCode"></span>
+            </div>
+            <div class="score-row">
+              <div class="score-ring" id="scoreRing">
+                <strong id="cellIndex"></strong><span>/ 100</span>
+              </div>
+              <div>
+                <span id="priority" class="priority"></span>
+                <p data-i18n="indexHelp">
+                  Exploratory priority index.<br />Not flood probability.
+                </p>
+              </div>
+            </div>
+            <h3 data-i18n="drivers">What drives this result</h3>
+            <ul id="reasons" class="reasons"></ul>
+            <dl id="cellData"></dl>
+            <div class="action-box">
+              <span class="overline">03 / TEST AN ACTION</span>
+              <h3 data-i18n="actionTitle">Restore this site’s drainage</h3>
+              <p data-i18n="actionHelp">
+                Compare the same storm with this drain operating at full design
+                capacity.
+              </p>
+              <button class="btn primary" id="intervene" data-i18n="intervene">
+                Test drain clearance →</button
+              ><button id="undo" class="text-btn" hidden data-i18n="undo">
+                Undo this intervention
+              </button>
+            </div>
+          </aside>
+        </section>
+        <section class="comparison" id="comparison" hidden aria-live="polite">
+          <div>
+            <span class="overline">COUNTERFACTUAL · SAME STORM</span>
+            <h2 data-i18n="comparisonTitle">
+              What changes after the intervention?
+            </h2>
+            <p id="interventionName"></p>
+          </div>
+          <div class="compare-number">
+            <span data-i18n="before">Before</span
+            ><strong id="beforeScore"></strong
+            ><small data-i18n="siteIndex">site index</small>
+          </div>
+          <span class="compare-arrow">→</span>
+          <div class="compare-number after">
+            <span data-i18n="after">After</span><strong id="afterScore"></strong
+            ><small data-i18n="siteIndex">site index</small>
+          </div>
+          <div class="compare-change">
+            <strong id="volumeChange"></strong>
+            <p data-i18n="changeHelp">
+              Change in surface storage + catchment outflow. Model estimate, not
+              measured benefit.
+            </p>
+          </div>
+        </section>
+        <section class="bottom-grid">
+          <div class="evidence-panel panel">
+            <div class="panel-heading">
+              <div>
+                <span class="overline"
+                  >FIELD EVIDENCE STARTS WITH A REPORT</span
+                >
+                <h2 data-i18n="reportTitle">
+                  Turn a field report into a reviewable observation
+                </h2>
+              </div>
+              <span class="tag" id="reportMode">MANUAL + META ADAPTER</span>
+            </div>
+            <p class="section-description" data-i18n="reportHelp">
+              Meta can extract an observation and its exact source quote. A
+              person confirms it before it enters the inspection queue.
+            </p>
+            <div class="report-input">
+              <label for="reportText" data-i18n="reportText">Field note</label
+              ><textarea id="reportText" rows="3" maxlength="6000">
+At the Upper Street site, leaves and litter are blocking the drain inlet. Water is collecting next to the crossing. Observed during today’s rain; no measurement of depth.</textarea>
+              <div class="report-actions">
+                <button class="btn secondary" id="sample" data-i18n="sample">
+                  Load example report</button
+                ><button class="btn primary" id="analyze" data-i18n="analyze">
+                  Analyze with Meta ↗
+                </button>
+              </div>
+              <p class="small-muted" id="aiStatus" role="status"></p>
+            </div>
+            <details id="manual">
+              <summary data-i18n="manual">
+                Review manually / use without an API key
+              </summary>
+              <div class="manual-fields">
+                <label
+                  ><span data-i18n="site">Site</span
+                  ><select id="reportCell"></select></label
+                ><label
+                  ><span data-i18n="observation">Observation</span
+                  ><select id="reportType">
+                    <option value="blocked_drain">Blocked drain</option>
+                    <option value="surface_water">Surface water</option>
+                    <option value="no_issue">No issue observed</option>
+                    <option value="unknown">Needs verification</option>
+                  </select></label
+                >
+              </div>
+              <button
+                class="btn secondary"
+                id="addManual"
+                data-i18n="addManual"
+              >
+                Add draft for review
+              </button>
+            </details>
+            <div id="reportList" class="report-list" aria-live="polite"></div>
+          </div>
+          <div class="queue-panel panel">
+            <div class="panel-heading">
+              <div>
+                <span class="overline">EXPLAINABLE WORKLIST</span>
+                <h2 data-i18n="queue">Inspect these sites first</h2>
+              </div>
+              <span id="queueCount" class="tag">3 SITES</span>
+            </div>
+            <p class="section-description" data-i18n="queueHelp">
+              Confirmed blocked-drain reports come first, followed by the model
+              index. This is a transparent rule, not an optimal routing claim.
+            </p>
+            <div id="rankList"></div>
+            <div class="queue-note">
+              <span>✓</span>
+              <p data-i18n="queueNote">
+                Reports are evidence, not automatic changes to the hydrological
+                model.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+      <section id="historyView" hidden class="history-view">
+        <div class="history-intro panel">
+          <div>
+            <span class="tag cyan">COPERNICUS EMS · EMSR773</span>
+            <h2 data-i18n="historyTitle">Valencia, October 2024</h2>
+            <p data-i18n="historyHelp">
+              A real historical evidence layer, separate from the synthetic
+              scenario. Observed flood traces are not a forecast or a current
+              flood extent.
+            </p>
+          </div>
+          <a
+            class="btn secondary"
+            href="https://mapping.emergency.copernicus.eu/activations/EMSR773/"
+            target="_blank"
+            rel="noopener"
+            data-i18n="source"
+            >Open official source ↗</a
+          >
+        </div>
+        <div class="history-filter">
+          <label for="historyFeature">Inspect source geometry</label
+          ><select id="historyFeature">
+            <option value="">All mapped evidence</option></select
+          ><button class="btn secondary" id="historyOverview">
+            Show overview
+          </button>
+        </div>
+        <div class="historical-map panel">
+          <svg
+            id="historyMap"
+            viewBox="0 0 1000 540"
+            aria-label="Historical Copernicus flood traces"
+          ></svg>
+          <div id="historyStatus" class="history-status" role="status"></div>
+        </div>
+        <div class="history-facts panel" id="historyFacts"></div>
+      </section>
+      <footer>
+        <span>FloodShield <b>v0.2</b> · Open research prototype</span
+        ><span data-i18n="footer"
+          >Synthetic model + separately sourced historical evidence. No
+          operational warnings.</span
+        ><button id="readiness" class="text-btn" data-i18n="readiness">
+          Hackathon readiness ↗
+        </button>
+      </footer>
+    </main>
+    <dialog id="method">
+      <div class="dialog-head">
+        <div>
+          <span class="overline">TRANSPARENCY BY DESIGN</span>
+          <h2 data-i18n="methodTitle">
+            What this prototype can — and cannot — do
+          </h2>
+        </div>
+        <button id="closeMethod" class="icon-button" aria-label="Close">
+          ×
+        </button>
+      </div>
+      <div id="methodContent"></div>
+      <button class="btn primary" id="closeMethodBottom" data-i18n="understood">
+        Understood
+      </button>
+    </dialog>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
