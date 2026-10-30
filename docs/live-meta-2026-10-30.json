@@ -1,0 +1,326 @@
+{
+  "date": "2026-10-30",
+  "timezone": "Asia/Qyzylorda",
+  "model": "muse-spark-1.3",
+  "method": "Authenticated HTTP requests to deployed /api/analyze; the Worker calls Meta, validates JSON and exact source quotations.",
+  "suite": "12 authored regression fixtures; single run per source version; not an independent benchmark",
+  "initial": {
+    "requests": 12,
+    "passed": 11,
+    "rows": [
+      {
+        "id": "en-blocked",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            2,
+            "blocked_drain"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 7565
+      },
+      {
+        "id": "ru-blocked",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            0,
+            "blocked_drain"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 7683
+      },
+      {
+        "id": "en-water-not-blockage",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            10,
+            "surface_water"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 9543
+      },
+      {
+        "id": "ru-negation",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            2,
+            "no_issue"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 6718
+      },
+      {
+        "id": "unknown-place",
+        "status": 200,
+        "passed": true,
+        "actual": [],
+        "questionCount": 1,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 9688
+      },
+      {
+        "id": "missing-place",
+        "status": 200,
+        "passed": true,
+        "actual": [],
+        "questionCount": 1,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 7043
+      },
+      {
+        "id": "two-sites",
+        "status": 200,
+        "passed": false,
+        "actual": [
+          [
+            2,
+            "blocked_drain"
+          ],
+          [
+            10,
+            "surface_water"
+          ],
+          [
+            10,
+            "unknown"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 8485
+      },
+      {
+        "id": "command-only",
+        "status": 200,
+        "passed": true,
+        "actual": [],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 7556
+      },
+      {
+        "id": "en-no-issue",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            0,
+            "no_issue"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 6613
+      },
+      {
+        "id": "ru-missing-place",
+        "status": 200,
+        "passed": true,
+        "actual": [],
+        "questionCount": 1,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 6588
+      },
+      {
+        "id": "mixed-language",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            2,
+            "blocked_drain"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 9363
+      },
+      {
+        "id": "no-report",
+        "status": 200,
+        "passed": true,
+        "actual": [],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 6287
+      }
+    ],
+    "promptRevision": "baseline"
+  },
+  "refined": {
+    "requests": 12,
+    "passed": 12,
+    "rows": [
+      {
+        "id": "en-blocked",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            2,
+            "blocked_drain"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 7377
+      },
+      {
+        "id": "ru-blocked",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            0,
+            "blocked_drain"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 6716
+      },
+      {
+        "id": "en-water-not-blockage",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            10,
+            "surface_water"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 8184
+      },
+      {
+        "id": "ru-negation",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            2,
+            "no_issue"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 7263
+      },
+      {
+        "id": "unknown-place",
+        "status": 200,
+        "passed": true,
+        "actual": [],
+        "questionCount": 1,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 7224
+      },
+      {
+        "id": "missing-place",
+        "status": 200,
+        "passed": true,
+        "actual": [],
+        "questionCount": 1,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 8568
+      },
+      {
+        "id": "two-sites",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            2,
+            "blocked_drain"
+          ],
+          [
+            10,
+            "surface_water"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 7392
+      },
+      {
+        "id": "command-only",
+        "status": 200,
+        "passed": true,
+        "actual": [],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 6897
+      },
+      {
+        "id": "en-no-issue",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            0,
+            "no_issue"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 8350
+      },
+      {
+        "id": "ru-missing-place",
+        "status": 200,
+        "passed": true,
+        "actual": [],
+        "questionCount": 1,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 7421
+      },
+      {
+        "id": "mixed-language",
+        "status": 200,
+        "passed": true,
+        "actual": [
+          [
+            2,
+            "blocked_drain"
+          ]
+        ],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 8491
+      },
+      {
+        "id": "no-report",
+        "status": 200,
+        "passed": true,
+        "actual": [],
+        "questionCount": 0,
+        "model": "muse-spark-1.3",
+        "elapsedMs": 6486
+      }
+    ],
+    "promptRevision": "clarified-unknown-rule"
+  },
+  "change": "Clarify that missing drain condition is not a separate unknown physical observation beside observed surface water.",
+  "limits": [
+    "Model output is stochastic; this does not establish general accuracy.",
+    "Historical CEMS geometry is not solver validation.",
+    "The latest live integration was verified via deployed HTTP API; development browser hit the owner's ChatGPT access gate.",
+    "Per-request token cap does not impose an account-wide spending limit."
+  ]
+}

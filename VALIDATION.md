@@ -4,11 +4,23 @@ Date: 30 October 2026 (Asia/Qyzylorda). Verification scope: executable research 
 
 ## Automated checks
 
-40 Node tests pass: 18 solver tests, 6 counterfactual/worklist tests, 13 mocked Meta API tests and 3 built-Worker smoke tests. The artifact is rebuilt from current source during the test suite. Checks cover independent water accounting, conservation, routed inflow, invalid numeric/geometry inputs, downhill acyclicity, input immutability, parameter monotonicity, local intervention behavior at zero and full existing drainage, report confirmation rules, request bounds, source-quote validation, deadlines and sanitized errors. No real Meta call was made because no participant key is configured.
+40 Node tests pass: 18 solver tests, 6 counterfactual/worklist tests, 13 mocked Meta API tests and 3 built-Worker smoke tests. The artifact is rebuilt from current source during the test suite. Checks cover independent water accounting, conservation, routed inflow, invalid numeric/geometry inputs, downhill acyclicity, input immutability, parameter monotonicity, local intervention behavior at zero and full existing drainage, report confirmation rules, request bounds, source-quote validation, deadlines and sanitized errors. These tests are separate from the real Meta checks below.
+
+## Live Meta checks — 30 October 2026
+
+A dedicated key is stored as a hosted server secret. Authenticated requests to the published `/api/analyze` route exercised the full deployed Worker → Meta → output validation path with `muse-spark-1.3`.
+
+- Initial authored suite: **11/12 passed**. The two-site note returned the expected blocked-drain and surface-water observations plus an unnecessary `unknown` observation for missing drain-condition information.
+- Change: clarify that missing information is not a separate physical observation and must not duplicate a concrete observation for the same site.
+- Complete follow-up suite: **12/12 passed**, all HTTP 200. It covers English, Russian, mixed language, negation, missing/unknown locations, two sites, instruction-only input and a greeting with no observation.
+- Follow-up observed request latency: **6.5–8.6 seconds**. Both runs made 24 real inference requests in total, with no automatic retries.
+- Exact source-quotation and schema checks were enforced by the deployed adapter for every successful request. This does not establish factual truth or general semantic accuracy.
+
+The per-case site/type results, latency and prompt revision—including the initial failure—are retained in [the live run record](docs/live-meta-2026-10-30.json). The public record excludes account, billing, credential and internal deployment identifiers. These are authored regression examples, not a held-out or statistically representative benchmark.
 
 ## Browser checks
 
-v0.3 recheck: the new Meta-workflow button focuses the field note; missing-key analysis returns an explicit unavailable state; human confirmation still gates the tour; the stress scenario still yields 70 → 23 and −270 m³. The new workflow explanation translates into Russian. The successful-live-response receipt is implemented but has not been exercised against a real Meta account. No live credits were spent by this session.
+Earlier v0.3 browser recheck: the Meta-workflow button focuses the field note; missing-key analysis returns an explicit unavailable state; human confirmation gates the tour; the stress scenario yields 70 → 23 and −270 m³. The workflow explanation translates into Russian. The latest real Meta checks exercised the published HTTP API and returned receipt fields; the development browser reaches the Site's ChatGPT sign-in gate, so a fresh browser click-through of live extraction in the owner's session remains to be completed. Live credits were used for the checks above.
 
 - Guided step 2 requires human confirmation before step 3 can proceed.
 - Stress scenario: 45 mm / 6 h / 60% saturation / 25% network drainage.

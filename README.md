@@ -14,6 +14,8 @@ This is an executable research prototype for the Meta Global AI Developer Hackat
 
 The English interface has a Russian toggle. Core interactions do not need an API key or third-party map tiles. **No model response is fabricated when Meta is unavailable.**
 
+The hosted server now has a Meta runtime secret. Real `muse-spark-1.3` requests through the deployed `/api/analyze` route were verified on 30 October 2026. Click **Try the Meta workflow**, enter a field note and choose **Analyze with Meta** to use the live integration. The prepared guided-tour report remains an offline example. See [live validation](VALIDATION.md).
+
 ## Run locally
 
 Node.js **22 or newer**. No npm dependencies are required.
@@ -58,7 +60,7 @@ npm run eval:meta -- --live --cases=12
 
 The authored fixtures cover English, Russian, mixed language, two sites, missing locations, negation and instruction-only input. They check expected site/type pairs, exact quotes (through the adapter), and clarifying questions. They are regression examples, **not an independent or statistically representative benchmark**. The command exits without sending requests unless explicitly opted in and a key is present. Never run live evaluation as an automatic CI job.
 
-The token cap bounds each response, not the account's total spending. Configure account-level limits in Meta and keep reserve credits for judging. Check actual token usage and billing before scaling evaluation. No live evaluation has yet been run for this version. See [development milestones](docs/DEVELOPMENT.md).
+The token cap bounds each response, not the account's total spending. Keep reserve credits for judging and check actual token usage and billing before scaling evaluation. Meta's email spending notifications are not a hard spending cap. Live evaluation results, including the initial failure, are recorded in [validation](VALIDATION.md). See [development milestones](docs/DEVELOPMENT.md).
 
 ## What is real, and what is synthetic?
 
@@ -105,7 +107,7 @@ The tracked `.openai/hosting.json` identifies the existing Sites deployment. It 
 
 Theme candidate: **Push the Frontier**, by connecting model-assisted interpretation of field evidence with transparent computational scenarios. Judges can inspect the causal comparison, data provenance and code. The public event page emphasizes creativity, technical ambition and a working implementation: https://dev.meta.ai/events/global-hackathon
 
-Before submission: configure and actually test Meta with the participant key; evaluate extraction on held-out, ambiguous and adversarial notes; verify participant rules and access for judges; obtain domain review; and validate any future prediction on genuinely independent historical events. Neither scientific predictive skill nor damage prevention has been demonstrated.
+Before submission: evaluate extraction on independently labeled, held-out reports; verify participant rules and access for judges; obtain domain review; and validate any future prediction on genuinely independent historical events. Live Meta extraction has been exercised against authored fixtures; neither scientific predictive skill nor damage prevention has been demonstrated.
 
 Development assistance: ChatGPT/Codex and bounded research/code-review agents were used. Verify the applicable participant rules for disclosure and permitted assistance. Using a development assistant does not substitute for using Meta in the submitted application.
 

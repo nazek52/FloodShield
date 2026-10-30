@@ -7,16 +7,16 @@ Updated: 30 October 2026, Asia/Qyzylorda.
 - A visible three-step explanation connects field notes, Meta extraction and reviewed drainage comparisons. A direct button focuses the report workflow.
 - Successful Meta responses display the requested model, elapsed time and provider-supplied token counts. Configuration alone is labeled separately.
 - JSON-schema decoding, a 4,096-completion-token cap, low reasoning effort, and rejection of truncated output prepare the adapter for live use.
-- Twelve authored multilingual regression fixtures and an explicit, bounded live evaluation command are included. They have not been run against a real model.
+- A dedicated Meta key is configured only in hosted server secrets. Real Muse Spark calls through the published API were verified on 30 October 2026.
+- Twelve authored multilingual regression fixtures and an explicit, bounded live evaluation command are included. The first real run passed 11/12: the two-site report produced a redundant unknown-state observation. The extraction instructions were clarified; the failure and follow-up results are retained in the validation report.
 - The existing solver, historical evidence and manual review remain usable. No synthetic report is represented as an AI response.
 
-## Next milestone: real Meta integration
+## Next milestone: independent evaluation and judge access
 
-1. Authenticate the correct Meta participant account in a browser accessible to the development session, or configure MODEL_API_KEY directly in the deployment's server-side secrets. Signing in in another browser does not share its session or provide an API key.
-2. Verify a single real extraction. Inspect the actual response and usage. A key-presence status is not a connectivity check.
-3. Run the three-case live smoke evaluation; correct observed failures before the full twelve-case regression run. Keep failed cases in the report rather than selecting only successes.
-4. Collect genuinely new, independently labeled reports. Evaluate site attribution, false blockage inference, negation, uncertainty and quote accuracy. Include unfamiliar place names and adversarial input.
-5. Configure and verify spending controls in the provider account before exposing the API to additional visitors. Per-request token limits do not constitute a global budget limit.
+1. Collect genuinely new, independently labeled reports. Evaluate site attribution, false blockage inference, negation, uncertainty and quote accuracy. Include unfamiliar place names and adversarial input.
+2. Test extraction through the browser in the owner's signed-in Site session. The development browser reaches the ChatGPT access gate; the deployed endpoint was tested through supported authenticated service access.
+3. Arrange supported judge access and test it from a separate visitor context. Preserve server-only credentials.
+4. Verify spending controls before exposing the API to additional visitors. Per-request token limits and Meta's email spending alerts do not constitute a global budget limit.
 
 ## Jury readiness
 
@@ -28,4 +28,4 @@ Updated: 30 October 2026, Asia/Qyzylorda.
 
 ## Credit use
 
-Use participant credits for actual inference, error analysis and useful iteration. Start with a small bounded run, inspect billing and latency, then expand only where results justify it. Preserve a reserve for the demonstration and judging. The participant's reported $150 balance has not yet been verified from a signed-in session.
+Use participant credits for actual inference, error analysis and useful iteration. Preserve a reserve for demonstration and judging. Account balances, payment information, internal deployment identifiers and credentials are excluded from the public run record.
