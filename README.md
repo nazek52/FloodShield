@@ -45,6 +45,21 @@ Muse Spark extracts source-linked observations from a field note, identifies whi
 
 A manually prepared example is marked **EXAMPLE**. Manually entered observations are marked **MANUAL ENTRY**. Only a successful, validated Meta response is marked **Meta extraction**. Field reports change the worklist, not physical model parameters.
 
+### Live evaluation and bounded use
+
+The adapter requests a documented JSON schema, uses low reasoning effort and caps each response at 4,096 completion tokens. It rejects truncated responses even if their content parses. A successful call returns filtered token usage and elapsed time; the interface shows these in a live response receipt and includes the last successful run in the evidence export. A configured key is never described as a successful model call. A schema or quotation check does not establish semantic correctness.
+
+```sh
+# Requires a server-side key already set in your environment.
+npm run eval:meta -- --live --cases=3
+# Full authored regression suite: at most 12 requests, no automatic retries.
+npm run eval:meta -- --live --cases=12
+```
+
+The authored fixtures cover English, Russian, mixed language, two sites, missing locations, negation and instruction-only input. They check expected site/type pairs, exact quotes (through the adapter), and clarifying questions. They are regression examples, **not an independent or statistically representative benchmark**. The command exits without sending requests unless explicitly opted in and a key is present. Never run live evaluation as an automatic CI job.
+
+The token cap bounds each response, not the account's total spending. Configure account-level limits in Meta and keep reserve credits for judging. Check actual token usage and billing before scaling evaluation. No live evaluation has yet been run for this version. See [development milestones](docs/DEVELOPMENT.md).
+
 ## What is real, and what is synthetic?
 
 | Component | Provenance | Permitted interpretation |

@@ -1,13 +1,14 @@
 {
   "name": "floodshield",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.js",
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
-    "check": "node --check dist/app.js && node --check server/meta.js && node --test tests/*.test.js"
+    "check": "node --check dist/app.js && node --check server/meta.js && node --test tests/*.test.js",
+    "eval:meta": "node scripts/evaluate-meta.mjs"
   },
   "description": "Flood scenarios, reviewed field evidence, and testable drainage interventions",
   "engines": {

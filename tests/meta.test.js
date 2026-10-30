@@ -36,6 +36,10 @@ test("Meta request uses documented endpoint, server key, fixed instructions and 
       );
       const body = JSON.parse(options.body);
       assert.equal(body.model, "muse-spark-1.3");
+      assert.equal(body.max_completion_tokens, 4096);
+      assert.equal(body.reasoning_effort, "low");
+      assert.equal(body.response_format.type, "json_schema");
+      assert.equal(body.response_format.json_schema.schema.additionalProperties, false);
       assert.equal(body.messages.length, 2);
       assert.equal(body.messages[0].role, "developer");
       assert.ok(body.messages[0].content.includes("17"));
@@ -52,6 +56,27 @@ test("Meta request uses documented endpoint, server key, fixed instructions and 
   assert.equal(result.provider, "meta");
   assert.ok(!JSON.stringify(result).includes(env.MODEL_API_KEY));
   assert.equal(result.drainage, undefined);
+});
+
+test("truncated output is rejected even when its partial content happens to parse", async () => {
+  const response = await apiHandler(req({ text }), env, {
+    fetchImpl: async () => Response.json({ choices: [{ finish_reason: "length", message: { content: JSON.stringify(output) } }] }),
+  });
+  assert.equal(response.status, 502);
+  assert.equal((await response.json()).error, "invalid_model_output");
+});
+
+test("live receipt exposes only nonnegative integer usage fields and elapsed time", async () => {
+  const result = await analyzeReport({ text }, env, {
+    fetchImpl: async () => Response.json({ choices: [{ finish_reason: "stop", message: { content: JSON.stringify(output) } }], usage: { prompt_tokens: 31, completion_tokens: 12, total_tokens: 43, private: env.MODEL_API_KEY } }),
+  });
+  assert.deepEqual(result.usage, { prompt_tokens: 31, completion_tokens: 12, total_tokens: 43 });
+  assert.ok(result.elapsedMs >= 0);
+  assert.ok(!JSON.stringify(result).includes(env.MODEL_API_KEY));
+  const malformed = await analyzeReport({ text }, env, {
+    fetchImpl: async () => Response.json({ choices: [{ message: { content: JSON.stringify(output) } }], usage: { prompt_tokens: -1, completion_tokens: "12", total_tokens: 1.5 } }),
+  });
+  assert.deepEqual(malformed.usage, {});
 });
 
 test("status exposes only configuration boolean for both supported key variables", async () => {

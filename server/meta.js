@@ -12,6 +12,36 @@ const TYPES = new Set([
   "unknown",
 ]);
 const CELL_IDS = new Set(CELLS.map((cell) => cell.id));
+// Constrained decoding controls shape; source checks and human review still control meaning.
+const RESPONSE_FORMAT = {
+  type: "json_schema",
+  json_schema: {
+    name: "floodshield_observations",
+    strict: true,
+    schema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["observations", "questions"],
+      properties: {
+        observations: {
+          type: "array",
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["cellId", "type", "quote", "summary"],
+            properties: {
+              cellId: { type: "integer", enum: [...CELL_IDS] },
+              type: { type: "string", enum: [...TYPES] },
+              quote: { type: "string" },
+              summary: { type: "string" },
+            },
+          },
+        },
+        questions: { type: "array", items: { type: "string" } },
+      },
+    },
+  },
+};
 const ownKeys = (value, allowed) =>
   value &&
   typeof value === "object" &&
@@ -100,6 +130,7 @@ export async function analyzeReport(
   env = {},
   { fetchImpl = fetch, timeoutMs = 30_000 } = {},
 ) {
+  const startedAt = Date.now();
   const text = validateInput(input);
   const key = apiKey(env);
   if (!key)
@@ -144,6 +175,9 @@ export async function analyzeReport(
           signal: controller.signal,
           body: JSON.stringify({
             model,
+            response_format: RESPONSE_FORMAT,
+            max_completion_tokens: 4096,
+            reasoning_effort: "low",
             messages: [
               { role: "developer", content: instructions },
               { role: "user", content: JSON.stringify({ report: text }) },
@@ -157,6 +191,8 @@ export async function analyzeReport(
             "Meta API временно недоступен. Проверьте серверную настройку и повторите запрос.",
           );
         const payload = await response.json();
+        if (payload?.choices?.[0]?.finish_reason === "length")
+          throw invalidOutput();
         const content = payload?.choices?.[0]?.message?.content;
         if (typeof content !== "string" || content.length > 24_000)
           throw invalidOutput();
@@ -166,7 +202,18 @@ export async function analyzeReport(
         } catch {
           throw invalidOutput();
         }
-        return { ...validateOutput(parsed, text), provider: "meta", model };
+        const usage = {};
+        for (const field of ["prompt_tokens", "completion_tokens", "total_tokens"]) {
+          const value = payload?.usage?.[field];
+          if (Number.isSafeInteger(value) && value >= 0) usage[field] = value;
+        }
+        return {
+          ...validateOutput(parsed, text),
+          provider: "meta",
+          model,
+          elapsedMs: Math.max(0, Date.now() - startedAt),
+          usage,
+        };
       })(),
     ]);
   } catch (error) {

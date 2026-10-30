@@ -61,6 +61,12 @@
           >
         </div>
       </section>
+      <section class="mission-strip" aria-label="How FloodShield works">
+        <div class="mission-lead"><span class="overline">THE MISSING LINK</span><h2 data-i18n="missionTitle">A field note becomes an action you can test.</h2><button class="text-btn" id="tryMeta" data-i18n="tryMeta">Try the Meta workflow ↓</button></div>
+        <div class="mission-step"><span class="step-glyph">01</span><strong data-i18n="stepNote">Describe what you see</strong><p data-i18n="stepNoteHelp">A report from a known site, in your own words.</p></div>
+        <div class="mission-step meta-step"><span class="step-glyph">02 / META</span><strong data-i18n="stepMeta">Extract the evidence</strong><p data-i18n="stepMetaHelp">Muse Spark identifies the site, observation and exact quote.</p></div>
+        <div class="mission-step"><span class="step-glyph">03</span><strong data-i18n="stepReview">Review, then compare</strong><p data-i18n="stepReviewHelp">Confirm the report. Test drainage clearance under the same storm.</p></div>
+      </section>
       <section id="tour" class="tour" hidden aria-live="polite">
         <div>
           <span class="step-number" id="tourNumber">01</span>
@@ -328,7 +334,7 @@
           </div>
         </section>
         <section class="bottom-grid">
-          <div class="evidence-panel panel">
+          <div class="evidence-panel panel" id="evidencePanel">
             <div class="panel-heading">
               <div>
                 <span class="overline"
@@ -344,6 +350,7 @@
               Meta can extract an observation and its exact source quote. A
               person confirms it before it enters the inspection queue.
             </p>
+            <div class="meta-receipt" id="metaReceipt" hidden aria-live="polite"></div>
             <div class="report-input">
               <label for="reportText" data-i18n="reportText">Field note</label
               ><textarea id="reportText" rows="3" maxlength="6000">
@@ -447,7 +454,7 @@ At the Upper Street site, leaves and litter are blocking the drain inlet. Water 
         <div class="history-facts panel" id="historyFacts"></div>
       </section>
       <footer>
-        <span>FloodShield <b>v0.2</b> · Open research prototype</span
+        <span>FloodShield <b>v0.3</b> · Open research prototype</span
         ><span data-i18n="footer"
           >Synthetic model + separately sourced historical evidence. No
           operational warnings.</span

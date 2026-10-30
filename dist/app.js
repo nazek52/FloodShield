@@ -19,6 +19,14 @@ const $ = (id) => document.getElementById(id),
         })[c],
     );
 const ru = {
+  missionTitle: "От сообщения — к проверяемому действию.",
+  tryMeta: "Попробовать цепочку с Meta ↓",
+  stepNote: "Опишите наблюдение",
+  stepNoteHelp: "Сообщение об известном участке своими словами.",
+  stepMeta: "Извлеките свидетельства",
+  stepMetaHelp: "Muse Spark находит участок, наблюдение и точную цитату.",
+  stepReview: "Проверьте и сравните",
+  stepReviewHelp: "Подтвердите сообщение. Сравните очистку дренажа при том же дожде.",
   eyebrow: "ПОДДЕРЖКА РЕШЕНИЙ · ИССЛЕДОВАТЕЛЬСКИЙ ПРОТОТИП",
   title: "От сигналов затопления<br>к проверке на месте.",
   subtitle:
@@ -107,6 +115,7 @@ let lang = "en",
   result = baseline,
   unmodified = baseline,
   configured = false,
+  lastMetaRun = null,
   tourStep = -1,
   historyData = null,
   activeView = "lab",
@@ -487,10 +496,25 @@ function translate() {
   if (historyData) drawHistory();
 }
 function apiLabel() {
-  $("apiStatus").textContent = configured
+  $("apiStatus").textContent = lastMetaRun
+    ? choose("● META RESPONDED", "● META ОТВЕТИЛА")
+    : configured
     ? choose("● META CONFIGURED", "● META НАСТРОЕН")
     : choose("● META KEY NEEDED", "● НУЖЕН КЛЮЧ META");
   $("apiStatus").classList.toggle("ready", configured);
+  $("reportMode").textContent = lastMetaRun
+    ? choose("META · LIVE RESPONSE", "META · ЖИВОЙ ОТВЕТ")
+    : configured
+      ? choose("META · KEY CONFIGURED", "META · КЛЮЧ НАСТРОЕН")
+      : choose("META · AWAITING KEY", "META · ОЖИДАЕТ КЛЮЧ");
+  $("metaReceipt").hidden = !lastMetaRun;
+  if (lastMetaRun) {
+    const tokens = lastMetaRun.usage?.total_tokens;
+    $("metaReceipt").textContent =
+      `${lastMetaRun.model} · ${(lastMetaRun.elapsedMs / 1000).toFixed(1)} s` +
+      (Number.isSafeInteger(tokens) ? ` · ${fmt(tokens)} tokens` : "") +
+      " · " + choose("Structure + exact quotes checked. Meaning needs human review.", "Структура и цитаты проверены. Смысл проверяет человек.");
+  }
   $("aiStatus").textContent = configured
     ? choose(
         "Your note will be sent to Meta when you click Analyze.",
@@ -511,6 +535,7 @@ async function analyze() {
     return;
   }
   $("analyze").disabled = true;
+  $("evidencePanel").setAttribute("aria-busy", "true");
   $("aiStatus").textContent = choose(
     "Meta is extracting source-linked observations…",
     "Meta извлекает наблюдения с цитатами…",
@@ -539,6 +564,7 @@ async function analyze() {
     }
     if (!Array.isArray(data.observations) || data.provider !== "meta")
       throw Error("invalid");
+    // Validate the entire batch before adding any observation to local storage.
     for (const o of data.observations) {
       if (
         !Number.isInteger(o.cellId) ||
@@ -549,8 +575,18 @@ async function analyze() {
         !text.includes(o.quote)
       )
         throw Error("invalid");
-      addReport({ ...o, origin: "meta" });
     }
+    lastMetaRun = {
+      model: typeof data.model === "string" ? data.model : "Meta",
+      elapsedMs: Number.isFinite(data.elapsedMs) ? data.elapsedMs : 0,
+      usage: data.usage || {},
+      createdAt: new Date().toISOString(),
+      observations: data.observations,
+      questions: Array.isArray(data.questions) ? data.questions : [],
+    };
+    configured = true;
+    apiLabel();
+    for (const o of data.observations) addReport({ ...o, origin: "meta" });
     $("aiStatus").textContent =
       choose(
         `${data.observations.length} drafts extracted. Check the location, meaning and quote before confirming.`,
@@ -564,6 +600,7 @@ async function analyze() {
     $("manual").open = true;
   } finally {
     $("analyze").disabled = false;
+    $("evidencePanel").setAttribute("aria-busy", "false");
   }
 }
 function tourRender() {
@@ -888,6 +925,11 @@ $("addManual").onclick = () => {
   });
 };
 $("analyze").onclick = analyze;
+$("tryMeta").onclick = () => {
+  setView("lab");
+  $("evidencePanel").scrollIntoView({ behavior: "smooth", block: "center" });
+  $("reportText").focus({ preventScroll: true });
+};
 $("demo").onclick = () => {
   tourStep = -1;
   $("tour").hidden = false;
@@ -923,6 +965,7 @@ $("export").onclick = () => {
       "Historical traces are post-event evidence, not a validation set",
     ],
     metaConfigured: configured,
+    lastMetaRun,
   };
   const u = URL.createObjectURL(
       new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }),
