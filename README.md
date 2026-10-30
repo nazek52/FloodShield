@@ -4,6 +4,12 @@
 
 This is an executable research prototype for the Meta Global AI Developer Hackathon. It is not an operational flood forecast or emergency warning system.
 
+## Public demo
+
+**[Open FloodShield on GitHub Pages](https://nazek52.github.io/FloodShield/)**
+
+The GitHub Pages demo runs the simulation, historical map, guided tour and manual review in your browser. Live Meta extraction requires the separately hosted server and is unavailable on this static demo. GitHub Actions publishes the tracked public assets after checks pass on `main`.
+
 ## Try the demo in 60 seconds
 
 1. Click **Run the 60-second demo**. A synthetic scenario loads: 45 mm of rain over 6 hours, with the drainage network at 25% of its design capacity.
